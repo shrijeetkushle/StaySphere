@@ -21,7 +21,11 @@ const reviewRouter = require("./routes/review.js");
 const userRouter = require("./routes/user.js");
 
 // const MONGO_URL = "mongodb://127.0.0.1:27017/wanderlust";
-const dbUrl = process.env.ATLASDB_URL;
+const dbUrl = process.env.ATLASDB_URL || process.env.MONGO_URL;
+
+if (!dbUrl) {
+    throw new Error("Missing ATLASDB_URL or MONGO_URL environment variable");
+}
 
 main()
 .then(() => {
@@ -50,7 +54,7 @@ const store = MongoStore.create({
     touchAfter: 24 * 3600,
 });
 
-store.on("error", () => {
+store.on("error", (err) => {
     console.log("error on MONGO SESSION STORE", err);
 });
 
